@@ -91,7 +91,7 @@ void Burst::PlotReader::runTask()
 		else
 			break;
 
-		log_trace(MinerLogger::plotReader, "new plot read notification: %s", plotReadNotification->dir);
+		//log_trace(MinerLogger::plotReader, "new plot read notification: %s", plotReadNotification->dir);
 
 		// only process the current block
 		if (miner_.getBlockheight() != plotReadNotification->blockheight)
@@ -107,7 +107,7 @@ void Burst::PlotReader::runTask()
 			for (const auto& relatedPlotFile : relatedPlotList.second)
 				plotReadNotification->plotList.emplace_back(relatedPlotFile);
 
-		log_trace(MinerLogger::plotReader, "new plot read notification size: %z", plotReadNotification->plotList.size());
+		//log_trace(MinerLogger::plotReader, "new plot read notification size: %z", plotReadNotification->plotList.size());
 
 		for (auto plotFileIter = plotReadNotification->plotList.begin();
 			plotFileIter != plotReadNotification->plotList.end() &&
@@ -120,7 +120,7 @@ void Burst::PlotReader::runTask()
 			
 			Poco::Timestamp timeStartFile;
 
-			log_trace(MinerLogger::plotReader, "opening plot file %s", plotFile.getPath());
+			//log_trace(MinerLogger::plotReader, "opening plot file %s", plotFile.getPath());
 
 			if (!isCancelled() && inputStream.is_open())
 			{
@@ -166,7 +166,7 @@ void Burst::PlotReader::runTask()
 
 				for (auto staggerBlock = 0ul; !isCancelled() && staggerBlock < staggerBlocks && currentBlock; ++staggerBlock)
 				{
-					log_trace(MinerLogger::plotReader, "reading stagger %Lu of %Lu of %s", staggerBlock, staggerBlocks, plotFile.getPath());
+					//log_trace(MinerLogger::plotReader, "reading stagger %Lu of %Lu of %s", staggerBlock, staggerBlocks, plotFile.getPath());
 
 					const auto staggerBlockOffset = staggerBlock * staggerBlockSize;
 					const auto staggerScoopOffset = plotReadNotification->scoopNum * staggerSize * Settings::ScoopSize;
@@ -176,7 +176,7 @@ void Burst::PlotReader::runTask()
 
 					for (auto staggerChunk = 0u; staggerChunk < staggerChunks && !isCancelled() && currentBlock; ++staggerChunk)
 					{
-						log_trace(MinerLogger::plotReader, "reading stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
+						//log_trace(MinerLogger::plotReader, "reading stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
 
 						auto memoryAcquired = false;
 
@@ -190,7 +190,7 @@ void Burst::PlotReader::runTask()
 							currentBlock = plotReadNotification->blockheight == miner_.getBlockheight();
 						}
 
-						log_trace(MinerLogger::plotReader, "aquired memory for stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
+						//log_trace(MinerLogger::plotReader, "aquired memory for stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
 
 						// if the reader is cancelled, jump out of the loop
 						if (isCancelled())
@@ -223,17 +223,17 @@ void Burst::PlotReader::runTask()
 							//inputStream.read(reinterpret_cast<char*>(&verification->buffer[0]), staggerScoopSize);
 							inputStream.read(reinterpret_cast<char*>(&verification->buffer[0]), staggerChunkBytes);
 
-							log_trace(MinerLogger::plotReader, "read data for stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
+							//log_trace(MinerLogger::plotReader, "read data for stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
 							verificationQueue_->enqueueNotification(verification);
-							log_trace(MinerLogger::plotReader, "enqueued verifier work for stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
+							//log_trace(MinerLogger::plotReader, "enqueued verifier work for stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
 
-							log_trace(MinerLogger::plotReader, "changing progress for stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
-							if (progress_ != nullptr)
-							{
-								progress_->add(staggerChunkBytes * Settings::ScoopPerPlot, plotReadNotification->blockheight);
-								miner_.getData().getBlockData()->setProgress(progress_->getProgress(), plotReadNotification->blockheight);
-							}
-							log_trace(MinerLogger::plotReader, "changed progress for stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
+							//log_trace(MinerLogger::plotReader, "changing progress for stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
+							//if (progress_ != nullptr)
+							//{
+							//	progress_->add(staggerChunkBytes * Settings::ScoopPerPlot, plotReadNotification->blockheight);
+							//	miner_.getData().getBlockData()->setProgress(progress_->getProgress(), plotReadNotification->blockheight);
+							//}
+							//log_trace(MinerLogger::plotReader, "changed progress for stagger chunk %u of stagger %Lu of %s", staggerChunk, staggerBlock, plotFile.getPath());
 
 							// check, if the incoming plot-read-notification is for the current round
 							currentBlock = plotReadNotification->blockheight == miner_.getBlockheight();
@@ -284,7 +284,7 @@ void Burst::PlotReader::runTask()
 			}
 		}
 		
-		log_trace(MinerLogger::plotReader, "read plot dir %s", plotReadNotification->dir);
+		//log_trace(MinerLogger::plotReader, "read plot dir %s", plotReadNotification->dir);
 
 		miner_.getData().getBlockData()->setProgress(plotReadNotification->dir, 100.f, plotReadNotification->blockheight);
 
