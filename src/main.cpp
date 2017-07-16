@@ -49,6 +49,16 @@ public:
 	}
 };
 
+std::string GetEnv( const std::string & var ) {
+     const char * val = ::getenv( var.c_str() );
+     if ( val == 0 ) {
+         return "";
+     }
+     else {
+         return val;
+     }
+}
+
 int main(int argc, const char* argv[])
 {
 	poco_ndc(main);
@@ -61,6 +71,30 @@ int main(int argc, const char* argv[])
 	//Poco::ThreadPool::defaultPool().start(*messageDispatcher);
 
 	auto general = &Poco::Logger::get("general");
+
+	std::string proxy = GetEnv("http_proxy");
+	if(proxy != "") {
+		size_t sep = proxy.find_last_of(":");
+		
+		std::string protocol = "http://";
+		size_t protocolOffset = protocol.length();
+		std::string proxyHost = proxy.substr(protocolOffset, sep-protocolOffset);
+
+		size_t proxyPort = std::stoi(proxy.substr(sep+1));
+		
+		fprintf(stdout, "setting proxy host: %s, port %d", proxyHost.c_str(), proxyPort);
+	
+		Poco::Net::HTTPClientSession::ProxyConfig proxyConfig;
+		proxyConfig.host=proxyHost;
+
+		proxyConfig.port=proxyPort;
+
+		Poco::Net::HTTPClientSession::setGlobalProxyConfig(proxyConfig);
+	}
+
+
+
+
 	
 	log_information(general, Burst::Settings::Project.nameAndVersionVerbose);
 	log_information(general, "----------------------------------------------");
